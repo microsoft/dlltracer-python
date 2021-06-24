@@ -1,0 +1,3 @@
+[build-system]
+requires = ["pymsbuild", "Cython"]
+build-backend = "pymsbuild"

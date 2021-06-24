@@ -1,0 +1,33 @@
+name: Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
+        python-version: [3.7, 3.8, 3.9, 3.10-dev]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Build in place
+      run: python -m pymsbuild
+
+    # TODO: Write some tests
+    #- name: Install dependencies
+    #  run: pip install -r tests/requirements.txt
+    #- name: Test with pytest
+    #  run: pytest
