@@ -29,12 +29,11 @@ METADATA = {
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Operating System :: Microsoft :: Windows",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
     ],
-    "Requires-Python": ">=3.7",
+    "Requires-Python": ">=3.8",
 }
 
 PACKAGE = CythonPydFile(
