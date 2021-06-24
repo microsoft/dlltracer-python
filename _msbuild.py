@@ -36,11 +36,17 @@ METADATA = {
     "Requires-Python": ">=3.8",
 }
 
-PACKAGE = CythonPydFile(
+PACKAGE = Package(
     "dlltracer",
-    ItemDefinition("ClCompile",
-        AdditionalIncludeDirectories=ConditionalValue(Path("src;").absolute(), prepend=True)
+    PyFile("dlltracer/__init__.py"),
+    CythonPydFile(
+        "_native",
+        ItemDefinition("ClCompile",
+            AdditionalIncludeDirectories=ConditionalValue(Path("src;").absolute(), prepend=True)
+        ),
+        ItemDefinition("Link",
+            GenerateDebugInformation=ConditionalValue("false", condition="$(Configuration) == 'Release'")),
+        PyxFile("dlltracer/_native.pyx", TargetExt=".cpp"),
     ),
-    PyxFile("dlltracer.pyx", TargetExt=".cpp"),
     source="src",
 )
