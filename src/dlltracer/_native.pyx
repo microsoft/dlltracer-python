@@ -333,6 +333,7 @@ cdef class Trace:
             self._h_write = NULL
             CloseTrace(self._h_read)
             self._h_read = NULL
+        self._thread.join()
         self._thread = None
 
 
