@@ -29,24 +29,35 @@ METADATA = {
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Operating System :: Microsoft :: Windows",
+        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
     ],
-    "Requires-Python": ">=3.8",
+    "Requires-Python": ">=3.7",
 }
+
+AUDIT_STUB = CSourceFile("dlltracer/audit_stub.c")
+
+PYD = CythonPydFile(
+    "_native",
+    ItemDefinition("ClCompile",
+        AdditionalIncludeDirectories=ConditionalValue(Path("src;").absolute(), prepend=True)
+    ),
+    ItemDefinition("Link",
+        GenerateDebugInformation=ConditionalValue("false", condition="$(Configuration) == 'Release'")),
+    PyxFile("dlltracer/_native.pyx", TargetExt=".cpp"),
+    IncludeFile("dlltracer/audit_stub.h"),
+    AUDIT_STUB,
+)
 
 PACKAGE = Package(
     "dlltracer",
     PyFile("dlltracer/__init__.py"),
-    CythonPydFile(
-        "_native",
-        ItemDefinition("ClCompile",
-            AdditionalIncludeDirectories=ConditionalValue(Path("src;").absolute(), prepend=True)
-        ),
-        ItemDefinition("Link",
-            GenerateDebugInformation=ConditionalValue("false", condition="$(Configuration) == 'Release'")),
-        PyxFile("dlltracer/_native.pyx", TargetExt=".cpp"),
-    ),
+    PYD,
     source="src",
 )
+
+def init_PACKAGE(wheel_tag):
+    if not wheel_tag.startswith("cp37"):
+        PYD.members.remove(AUDIT_STUB)
