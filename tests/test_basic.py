@@ -1,6 +1,7 @@
 import dlltracer
 import io
 import pathlib
+import pytest
 import sys
 
 
@@ -15,10 +16,10 @@ def test_out():
 
 
 def test_collect():
-    assert "_hashlib" not in sys.modules
+    assert "_msi" not in sys.modules
 
     with dlltracer.Trace(collect=True) as events:
-        import _hashlib
+        import _msi
 
     assert events
     names = set()
@@ -28,14 +29,17 @@ def test_collect():
         assert repr(e)
         assert str(e)
         names.add(pathlib.PurePath(e.path).stem.casefold())
-    assert "_hashlib" in names
+    assert "_msi" in names
 
 
 def test_audit():
     assert "_overlapped" not in sys.modules
 
-    with dlltracer.Trace(audit=True):
-        import _overlapped
+    try:
+        with dlltracer.Trace(audit=True):
+            import _overlapped
+    except NotImplementedError:
+        assert sys.version_info[:2] < (3, 8)
 
     # TODO: Collect and verify the hooked events in a subprocess
     # For now, we simply ensure that we do not crash when raising them

@@ -2,17 +2,16 @@
 # cython: language_level=3
 
 from libc.string cimport memcpy, memset
+from cpython cimport version as sys_version
 from cpython.ref cimport PyObject, Py_INCREF
 
-from sys import audit as _sys_audit
 from threading import Thread as _Thread
 from uuid import UUID as _UUID
 
 _SystemTraceControlGuid = _UUID("9e814aad-3204-11d2-9a82-006008a86939")
 _LoadLibraryProvider = _UUID('2cb15d1d-5fc1-11d2-abe1-00a0c911f518')
 
-
-cdef extern from "Python.h":
+cdef extern from "dlltracer/audit_stub.h":
     cdef int PySys_Audit(const char* event, const char* fmt, ...) except -1
 
 
@@ -278,6 +277,8 @@ cdef class Trace:
         self._collect = [] if collect else None
         self._out = out
         self._audit = audit
+        if sys_version.PY_VERSION_HEX < 0x03080000 and audit:
+            raise NotImplementedError("audit hooks are not available on this version of Python")
         self._debug = debug
 
     def __enter__(self):
