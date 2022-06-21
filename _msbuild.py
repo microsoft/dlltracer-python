@@ -24,7 +24,7 @@ METADATA = {
     "Description-Content-Type": "text/markdown",
     "Keywords": "Windows,Win32,DLL",
     "Classifier": [
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 5 - Production/Stable",
         "Environment :: Win32 (MS Windows)",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
