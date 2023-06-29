@@ -33,6 +33,7 @@ METADATA = {
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
     ],
     "Requires-Python": ">=3.7",
 }
@@ -59,5 +60,5 @@ PACKAGE = Package(
 )
 
 def init_PACKAGE(wheel_tag):
-    if not wheel_tag.startswith("cp37"):
+    if wheel_tag and not wheel_tag.startswith("cp37"):
         PYD.members.remove(AUDIT_STUB)
