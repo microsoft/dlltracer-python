@@ -87,7 +87,7 @@ cdef extern from "evntrace.h" nogil:
         ULONG UserDataLength
         void *UserData
 
-    ctypedef void (__stdcall *PEVENT_RECORD_CALLBACK)(EVENT_RECORD* EventRecord)
+    ctypedef void (__stdcall *PEVENT_RECORD_CALLBACK)(EVENT_RECORD* EventRecord) except * nogil
     ctypedef struct EVENT_TRACE_LOGFILEW:
         LPWSTR LoggerName
         ULONG ProcessTraceMode
@@ -179,7 +179,7 @@ class DebugEvent:
         )
 
 
-cdef void _check(ULONG r, str msg) nogil except *:
+cdef void _check(ULONG r, str msg) except * nogil:
     if r == 0:
         return
     with gil:
