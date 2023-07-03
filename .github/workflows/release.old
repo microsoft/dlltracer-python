@@ -1,3 +1,6 @@
+# We no longer release from GitHub Actions.
+# This file is kept for historical and/or copy-paste reasons
+
 name: PyPI Release
 
 on:
