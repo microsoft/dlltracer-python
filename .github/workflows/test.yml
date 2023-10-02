@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest]
-        python-version: [3.7, 3.8, 3.9, '3.10', '3.11']
+        python-version: [3.7, 3.8, 3.9, '3.10', '3.11', '3.12-dev']
 
     steps:
     - uses: actions/checkout@v2
@@ -28,11 +28,11 @@ jobs:
         pip install pytest
 
     - name: Build in place
-      run: python -m pymsbuild
+      run: python -m pymsbuild -v
 
     - name: Test with pytest
       run: |
-        python -m pymsbuild -c _msbuild_test.py
+        python -m pymsbuild -v -c _msbuild_test.py
         pytest
       env:
         PYTHONPATH: src
