@@ -5,6 +5,7 @@ from libc.string cimport memcpy, memset
 from cpython cimport version as sys_version
 from cpython.ref cimport PyObject, Py_INCREF
 
+from os.path import realpath as _realpath
 from threading import Thread as _Thread
 from uuid import UUID as _UUID
 
@@ -120,13 +121,27 @@ cdef int _audit = 0
 class LoadEvent:
     def __init__(self, path): self.path = path
     def __repr__(self): return f"<LoadLibrary({self.path})>"
-    def __str__(self): return f"LoadLibrary {self.path}"
+    def __str__(self):
+        path = self.path
+        if path.lower().startswith("\\device\\"):
+            try:
+                path = _realpath("\\\\." + path[7:])
+            except OSError:
+                pass
+        return f"LoadLibrary {path}"
 
 
 class LoadFailedEvent:
     def __init__(self, path): self.path = path
     def __repr__(self): return f"<LoadLibraryFailed({self.path})>"
-    def __str__(self): return f"Failed {self.path}"
+    def __str__(self):
+        path = self.path
+        if path.lower().startswith("\\device\\"):
+            try:
+                path = _realpath("\\\\." + path[7:])
+            except OSError:
+                pass
+        return f"Failed {self.path}"
 
 
 class DebugEvent:
@@ -179,14 +194,14 @@ class DebugEvent:
         )
 
 
-cdef void _check(ULONG r, str msg) except * nogil:
+cdef int _check(ULONG r, str msg) except -1 nogil:
     if r == 0:
-        return
+        return 0
     with gil:
         raise OSError(None, f"{msg} (0x{r:08X})", None, r & 0xFFFFFFFF)
 
 
-cdef void __stdcall _event_record_callback(EVENT_RECORD* EventRecord) nogil:
+cdef void __stdcall _event_record_callback(EVENT_RECORD* EventRecord) noexcept nogil:
     cdef EVENT_HEADER* hdr = &EventRecord.EventHeader
     cdef unsigned char* b = <unsigned char*>EventRecord.UserData
     cdef Py_ssize_t cb = <Py_ssize_t>EventRecord.UserDataLength

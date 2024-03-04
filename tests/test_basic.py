@@ -71,6 +71,21 @@ def test_audit():
     run(do_test_audit)
 
 
+def do_test_audit_failure():
+    def hook(event, args):
+        if event.startswith("dlltracer"):
+            raise RuntimeError("forced abort")
+    sys.addaudithook(hook)
+
+    with dlltracer.Trace(audit=True):
+        from dlltracer import _dlltracertest
+
+
+@pytest.mark.skipif(sys.version_info[:2] <= (3, 7), reason="Requires Python 3.8 or later")
+def test_audit_failure():
+    run(do_test_audit_failure)
+
+
 def do_test_debug():
     with dlltracer.Trace(debug=True, collect=True) as events:
         from dlltracer import _dlltracertest
